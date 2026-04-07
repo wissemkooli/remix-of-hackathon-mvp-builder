@@ -30,7 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
       try {
-        const res = await fetch("/api/auth/me", {
+        const res = await fetch("https://remix-of-hackathon-mvp-builder.onrender.com/api/auth/me", {
           headers: {
             "Authorization": `Bearer ${token}`
           }
