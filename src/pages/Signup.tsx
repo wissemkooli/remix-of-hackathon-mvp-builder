@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useAuth } from "@/lib/AuthContext";
+import { toast } from "sonner";
 
 type ProfileType = "student" | "trainer" | "enterprise" | null;
 
@@ -28,6 +30,29 @@ const SignupPage = () => {
   const [profileType, setProfileType] = useState<ProfileType>(null);
   const [step, setStep] = useState(0);
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const { login } = useAuth();
+  
+  const handleFinalize = async (nextStep: number) => {
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, name, profileType }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        login(data.token, data.user);
+        setStep(nextStep);
+      } else {
+        toast.error("Erreur lors de l'inscription");
+      }
+    } catch(err) {
+      toast.error("Erreur de connexion");
+    }
+  };
 
   const toggleSkill = (skill: string) => {
     setSelectedSkills(prev =>
@@ -103,10 +128,10 @@ const SignupPage = () => {
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-3">
                     <div><Label>Nom</Label><Input placeholder="Votre nom" className="mt-1" /></div>
-                    <div><Label>Prénom</Label><Input placeholder="Votre prénom" className="mt-1" /></div>
+                    <div><Label>Prénom</Label><Input placeholder="Votre prénom" className="mt-1" value={name} onChange={(e) => setName(e.target.value)} /></div>
                   </div>
-                  <div><Label>Email</Label><Input type="email" placeholder="email@exemple.com" className="mt-1" /></div>
-                  <div><Label>Mot de passe</Label><Input type="password" placeholder="••••••••" className="mt-1" /></div>
+                  <div><Label>Email</Label><Input type="email" placeholder="email@exemple.com" className="mt-1" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
+                  <div><Label>Mot de passe</Label><Input type="password" placeholder="••••••••" className="mt-1" value={password} onChange={(e) => setPassword(e.target.value)} /></div>
                   <div><Label>Pays</Label>
                     <Select>
                       <SelectTrigger className="mt-1"><SelectValue placeholder="Choisir" /></SelectTrigger>
@@ -118,7 +143,7 @@ const SignupPage = () => {
                   </div>
                   <div className="flex gap-3 pt-2">
                     <Button variant="outline" onClick={() => setStep(0)}>Retour</Button>
-                    <Button onClick={() => setStep(getNextStep(1))} className="flex-1 bg-hero-gradient text-primary-foreground hover:opacity-90 gap-2">
+                    <Button onClick={() => profileType === "student" ? setStep(getNextStep(1)) : handleFinalize(5)} className="flex-1 bg-hero-gradient text-primary-foreground hover:opacity-90 gap-2">
                       {profileType === "student" ? "Continuer" : "Finaliser l'inscription"} <ArrowRight size={16} />
                     </Button>
                   </div>
@@ -132,17 +157,17 @@ const SignupPage = () => {
                 <h2 className="font-heading text-2xl font-bold mb-2">Informations entreprise</h2>
                 <p className="text-muted-foreground mb-6">Enregistrez votre entreprise sur la plateforme.</p>
                 <div className="space-y-4">
-                  <div><Label>Nom de l'entreprise</Label><Input placeholder="Nom de l'entreprise" className="mt-1" /></div>
+                  <div><Label>Nom de l'entreprise</Label><Input placeholder="Nom de l'entreprise" className="mt-1" value={name} onChange={(e) => setName(e.target.value)} /></div>
                   <div className="grid grid-cols-2 gap-3">
                     <div><Label>Registre de commerce</Label><Input placeholder="N° RC" className="mt-1" /></div>
                     <div><Label>NIF</Label><Input placeholder="Numéro NIF" className="mt-1" /></div>
                   </div>
                   <div><Label>Responsable RH</Label><Input placeholder="Nom complet" className="mt-1" /></div>
-                  <div><Label>Email professionnel</Label><Input type="email" placeholder="rh@entreprise.com" className="mt-1" /></div>
-                  <div><Label>Mot de passe</Label><Input type="password" placeholder="••••••••" className="mt-1" /></div>
+                  <div><Label>Email professionnel</Label><Input type="email" placeholder="rh@entreprise.com" className="mt-1" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
+                  <div><Label>Mot de passe</Label><Input type="password" placeholder="••••••••" className="mt-1" value={password} onChange={(e) => setPassword(e.target.value)} /></div>
                   <div className="flex gap-3 pt-2">
                     <Button variant="outline" onClick={() => setStep(0)}>Retour</Button>
-                    <Button onClick={() => setStep(5)} className="flex-1 bg-hero-gradient text-primary-foreground hover:opacity-90 gap-2">
+                    <Button onClick={() => handleFinalize(5)} className="flex-1 bg-hero-gradient text-primary-foreground hover:opacity-90 gap-2">
                       Finaliser l'inscription <ArrowRight size={16} />
                     </Button>
                   </div>
@@ -315,7 +340,7 @@ const SignupPage = () => {
                   </div>
                   <div className="flex gap-3 pt-2">
                     <Button variant="outline" onClick={() => setStep(3)}>Retour</Button>
-                    <Button onClick={() => setStep(5)} className="flex-1 bg-hero-gradient text-primary-foreground hover:opacity-90 gap-2">
+                    <Button onClick={() => handleFinalize(5)} className="flex-1 bg-hero-gradient text-primary-foreground hover:opacity-90 gap-2">
                       Finaliser le profiling <ArrowRight size={16} />
                     </Button>
                   </div>

@@ -1,0 +1,28 @@
+{
+  "users": [
+    {
+      "id": "e3844e40-152c-4b2a-95da-36a51bdb3b4c",
+      "email": "vghji@hjio.com",
+      "password": "azerty",
+      "name": "test",
+      "profileType": "student",
+      "extra_data": {}
+    },
+    {
+      "id": "891022ee-a76f-4367-86b6-82afea11f7aa",
+      "email": "a",
+      "password": "a",
+      "name": "a",
+      "profileType": "student",
+      "extra_data": {}
+    },
+    {
+      "id": "701b1379-bf30-407e-9d6f-50159b37bac5",
+      "email": "a@gmail.com",
+      "password": "a",
+      "name": "a",
+      "profileType": "student",
+      "extra_data": {}
+    }
+  ]
+}
